@@ -6,31 +6,54 @@ namespace CryptL
     public sealed class CryptRSA : ICrypt
     {
         private RSACryptoServiceProvider rsa;
+
+        private int allKeyStandardLength = 2324;
+        private int publicKeyStandardLength = 532;
+
+        public byte[] AllKey
+        {
+            get
+            {
+                return rsa.ExportCspBlob(true);
+            }
+            set
+            {
+                if (value == null || value.Length != allKeyStandardLength) 
+                    throw new Exception($"Array AllKey must be {allKeyStandardLength} bytes");
+
+                rsa.ImportCspBlob(value);
+            }
+        }
+        public byte[] PublicKey
+        {
+            get
+            {
+                return rsa.ExportCspBlob(false);
+            }
+            set
+            {
+                if (value == null || value.Length != publicKeyStandardLength)
+                    throw new Exception($"Array PublicKey must be {publicKeyStandardLength} bytes");
+
+                rsa.ImportCspBlob(value);
+            }
+        }
         
         public CryptRSA() 
         {
-            rsa = new RSACryptoServiceProvider();
+            rsa = new RSACryptoServiceProvider(4096);
         }
-        public CryptRSA(byte[] keys)
+        public CryptRSA(byte[] keys, bool ifAllKey)
         {
-            if (keys == null || keys.Length <= 0)
-                throw new ArgumentNullException("keys");
-
-            rsa = new RSACryptoServiceProvider();
-            rsa.ImportCspBlob(keys); 
-        }
-
-        public byte[] GetKeys(bool withPrivateKey)
-        {
-            return rsa.ExportCspBlob(withPrivateKey);
-        }
-
-        public void SetKeys(byte[] keys)
-        {
-            if (keys == null || keys.Length <= 0)
-                throw new ArgumentNullException("keys");
-
-            rsa.ImportCspBlob(keys);
+            rsa = new RSACryptoServiceProvider(4096);
+            if (ifAllKey)
+            {
+                AllKey = keys;
+            }
+            else
+            {
+                PublicKey = keys;
+            }
         }
 
         public byte[] Encrypt(byte[] originalData)

@@ -7,7 +7,7 @@ namespace CryptL
     {
         public static byte[] GetHash(byte[] originalData)
         {
-            if (originalData == null || originalData.Length <= 0)
+            if (originalData == null || originalData.Length == 0)
                 throw new ArgumentNullException("originalData");
 
             using (SHA256 sha256 = SHA256.Create())
