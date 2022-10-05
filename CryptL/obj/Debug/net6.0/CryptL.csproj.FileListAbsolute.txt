@@ -1,0 +1,12 @@
+C:\My_Job\Cryptography\CryptL\CryptL\bin\Debug\net6.0\CryptL.deps.json
+C:\My_Job\Cryptography\CryptL\CryptL\bin\Debug\net6.0\CryptL.dll
+C:\My_Job\Cryptography\CryptL\CryptL\bin\Debug\net6.0\CryptL.pdb
+C:\My_Job\Cryptography\CryptL\CryptL\obj\Debug\net6.0\CryptL.csproj.AssemblyReference.cache
+C:\My_Job\Cryptography\CryptL\CryptL\obj\Debug\net6.0\CryptL.GeneratedMSBuildEditorConfig.editorconfig
+C:\My_Job\Cryptography\CryptL\CryptL\obj\Debug\net6.0\CryptL.AssemblyInfoInputs.cache
+C:\My_Job\Cryptography\CryptL\CryptL\obj\Debug\net6.0\CryptL.AssemblyInfo.cs
+C:\My_Job\Cryptography\CryptL\CryptL\obj\Debug\net6.0\CryptL.csproj.CoreCompileInputs.cache
+C:\My_Job\Cryptography\CryptL\CryptL\obj\Debug\net6.0\CryptL.dll
+C:\My_Job\Cryptography\CryptL\CryptL\obj\Debug\net6.0\refint\CryptL.dll
+C:\My_Job\Cryptography\CryptL\CryptL\obj\Debug\net6.0\CryptL.pdb
+C:\My_Job\Cryptography\CryptL\CryptL\obj\Debug\net6.0\ref\CryptL.dll
