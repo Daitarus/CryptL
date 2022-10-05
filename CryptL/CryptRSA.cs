@@ -3,7 +3,7 @@
 namespace CryptL
 {
 
-    public sealed class CryptRSA : CryptBase
+    public sealed class CryptRSA : ICrypt
     {
         private RSACryptoServiceProvider rsa;
         
@@ -33,14 +33,14 @@ namespace CryptL
             rsa.ImportCspBlob(keys);
         }
 
-        public override byte[] Encrypt(byte[] originalData)
+        public byte[] Encrypt(byte[] originalData)
         {
             if (originalData == null || originalData.Length <= 0)
                 throw new ArgumentNullException("originalData");
 
             return rsa.Encrypt(originalData, false);
         }
-        public override byte[] Decrypt(byte[] encryptData)
+        public byte[] Decrypt(byte[] encryptData)
         {
             if (encryptData == null || encryptData.Length <= 0)
                 throw new ArgumentNullException("encryptData");

@@ -2,7 +2,7 @@
 
 namespace CryptL
 {
-    public sealed class CryptAES : CryptBase
+    public sealed class CryptAES : ICrypt
     {
 
         private Aes aes;
@@ -27,7 +27,7 @@ namespace CryptL
             aes.IV = IV;
         }
 
-        public override byte[] Encrypt(byte[] originalData)
+        public byte[] Encrypt(byte[] originalData)
         {
             if (originalData == null || originalData.Length <= 0)
                 throw new ArgumentNullException("originalData");
@@ -35,12 +35,23 @@ namespace CryptL
             return UseCryptoStream(aes.CreateEncryptor(aes.Key, aes.IV), originalData);
         }
 
-        public override byte[] Decrypt(byte[] encryptData)
+        public byte[] Decrypt(byte[] encryptData)
         {
             if (encryptData == null || encryptData.Length <= 0)
                 throw new ArgumentNullException("encryptData");
 
             return UseCryptoStream(aes.CreateDecryptor(aes.Key, aes.IV), encryptData);
+        }
+
+        private byte[] UseCryptoStream(ICryptoTransform cryptoTransform, byte[] data)
+        {
+            MemoryStream memoryStream = new MemoryStream();
+            CryptoStream cryptoStream = new CryptoStream(memoryStream, cryptoTransform, CryptoStreamMode.Write);
+
+            cryptoStream.Write(data, 0, data.Length);
+            cryptoStream.FlushFinalBlock();
+
+            return memoryStream.ToArray();
         }
     }
 }
