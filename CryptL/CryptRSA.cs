@@ -18,8 +18,8 @@ namespace CryptL
             }
             set
             {
-                if (value == null || value.Length != allKeyStandardLength) 
-                    throw new Exception($"Array AllKey must be {allKeyStandardLength} bytes");
+                if (value == null || value.Length != allKeyStandardLength)
+                    throw new Exception($"Array {nameof(AllKey)} must be {allKeyStandardLength} bytes");
 
                 rsa.ImportCspBlob(value);
             }
@@ -33,18 +33,21 @@ namespace CryptL
             set
             {
                 if (value == null || value.Length != publicKeyStandardLength)
-                    throw new Exception($"Array PublicKey must be {publicKeyStandardLength} bytes");
+                    throw new Exception($"Array {nameof(PublicKey)} must be {publicKeyStandardLength} bytes");
 
                 rsa.ImportCspBlob(value);
             }
         }
-        
-        public CryptRSA() 
+
+        public CryptRSA()
         {
             rsa = new RSACryptoServiceProvider(4096);
         }
         public CryptRSA(byte[] keys, bool ifAllKey)
         {
+            if (keys == null || keys.Length == 0)
+                throw new ArgumentNullException(nameof(keys));
+
             rsa = new RSACryptoServiceProvider(4096);
             if (ifAllKey)
             {
@@ -58,15 +61,15 @@ namespace CryptL
 
         public byte[] Encrypt(byte[] originalData)
         {
-            if (originalData == null || originalData.Length <= 0)
-                throw new ArgumentNullException("originalData");
+            if (originalData == null || originalData.Length == 0)
+                throw new ArgumentNullException(nameof(originalData));
 
             return rsa.Encrypt(originalData, false);
         }
         public byte[] Decrypt(byte[] encryptData)
         {
-            if (encryptData == null || encryptData.Length <= 0)
-                throw new ArgumentNullException("encryptData");
+            if (encryptData == null || encryptData.Length == 0)
+                throw new ArgumentNullException(nameof(encryptData));
 
             return rsa.Decrypt(encryptData, false);
         }
