@@ -7,8 +7,8 @@ namespace CryptL
     {
         private RSACryptoServiceProvider rsa;
 
-        private int allKeyStandardLength = 2324;
-        private int publicKeyStandardLength = 532;
+        private static int allKeyStandardLength = 2324;
+        private static int publicKeyStandardLength = 532;
 
         public byte[] AllKey
         {
@@ -18,9 +18,6 @@ namespace CryptL
             }
             set
             {
-                if (value == null || value.Length != allKeyStandardLength)
-                    throw new Exception($"Array {nameof(AllKey)} must be {allKeyStandardLength} bytes");
-
                 rsa.ImportCspBlob(value);
             }
         }
@@ -32,9 +29,6 @@ namespace CryptL
             }
             set
             {
-                if (value == null || value.Length != publicKeyStandardLength)
-                    throw new Exception($"Array {nameof(PublicKey)} must be {publicKeyStandardLength} bytes");
-
                 rsa.ImportCspBlob(value);
             }
         }
@@ -43,19 +37,18 @@ namespace CryptL
         {
             rsa = new RSACryptoServiceProvider(4096);
         }
-        public CryptRSA(byte[] keys, bool ifAllKey)
+        public CryptRSA(byte[] key, bool ifAllKey)
         {
-            if (keys == null || keys.Length == 0)
-                throw new ArgumentNullException(nameof(keys));
+            CheckExeptionKey(key, ifAllKey);
 
             rsa = new RSACryptoServiceProvider(4096);
             if (ifAllKey)
             {
-                AllKey = keys;
+                AllKey = key;
             }
             else
             {
-                PublicKey = keys;
+                PublicKey = key;
             }
         }
 
@@ -72,6 +65,23 @@ namespace CryptL
                 throw new ArgumentNullException(nameof(encryptData));
 
             return rsa.Decrypt(encryptData, false);
+        }
+
+        public static void CheckExeptionKey(byte[] key, bool ifAllKey)
+        {
+            int keyStandardLength = 0;
+
+            if (ifAllKey)
+            {
+                keyStandardLength = allKeyStandardLength;
+            }
+            else
+            {
+                keyStandardLength = publicKeyStandardLength;
+            }
+
+            if (key == null || key.Length != publicKeyStandardLength)
+                throw new Exception($"{nameof(key)} size must be {keyStandardLength}");
         }
     }
 
