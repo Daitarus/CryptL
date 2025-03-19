@@ -8,8 +8,8 @@ namespace CryptL.Crypt;
 public sealed class CryptAES : ICrypt, IDisposable
 {
     #region Fields
-    private const int keyStandardLength = 32;
-    private const int ivStandardLength = 16;
+    private const int _keyStandardLength = 32;
+    private const int _ivStandardLength = 16;
 
     private readonly Aes _aes = Aes.Create();
 
@@ -33,8 +33,8 @@ public sealed class CryptAES : ICrypt, IDisposable
         if (unionKeyIv == null)
             throw new ArgumentNullException(nameof(unionKeyIv));
 
-        if (unionKeyIv.Length != keyStandardLength + ivStandardLength)
-            throw new ArgumentException($"{nameof(unionKeyIv)} size not equal {keyStandardLength + ivStandardLength}");
+        if (unionKeyIv.Length != _keyStandardLength + _ivStandardLength)
+            throw new ArgumentException($"{nameof(unionKeyIv)} size not equal {_keyStandardLength + _ivStandardLength}");
 
         PartitionKeyIV(unionKeyIv, out byte[] key, out byte[] iv);
 
@@ -46,11 +46,11 @@ public sealed class CryptAES : ICrypt, IDisposable
     /// <param name="iv">Initialization vector for the symmetric algorithm.</param>
     public CryptAES(byte[] key, byte[] iv)
     {
-        if (key == null || key.Length != keyStandardLength)
-            throw new ArgumentException($"AES {nameof(key)} must be {keyStandardLength} bytes");
+        if (key == null || key.Length != _keyStandardLength)
+            throw new ArgumentException($"AES {nameof(key)} must be {_keyStandardLength} bytes");
 
-        if (iv == null || iv.Length != ivStandardLength)
-            throw new ArgumentException($"AES {nameof(iv)} must be {ivStandardLength} bytes");
+        if (iv == null || iv.Length != _ivStandardLength)
+            throw new ArgumentException($"AES {nameof(iv)} must be {_ivStandardLength} bytes");
 
         _aes.Key = key;
         _aes.IV = iv;
@@ -82,9 +82,9 @@ public sealed class CryptAES : ICrypt, IDisposable
     /// <returns>Union key.</returns>
     public byte[] GetUnionKeyIV()
     {
-        byte[] result = new byte[keyStandardLength + ivStandardLength];
-        Array.Copy(_aes.Key,0,result,0,keyStandardLength);
-        Array.Copy(_aes.IV,0,result,keyStandardLength,ivStandardLength);
+        byte[] result = new byte[_keyStandardLength + _ivStandardLength];
+        Array.Copy(_aes.Key,0,result,0,_keyStandardLength);
+        Array.Copy(_aes.IV,0,result,_keyStandardLength,_ivStandardLength);
 
         return result;
     }
@@ -97,11 +97,11 @@ public sealed class CryptAES : ICrypt, IDisposable
     #region Private methods
     private static void PartitionKeyIV(byte[] unionKeyIv, out byte[] key, out byte[] iv)
     {
-        key = new byte[keyStandardLength];
-        iv = new byte[ivStandardLength];
+        key = new byte[_keyStandardLength];
+        iv = new byte[_ivStandardLength];
 
-        Array.Copy(unionKeyIv, 0, key,0, keyStandardLength);
-        Array.Copy(unionKeyIv, keyStandardLength, iv, 0, ivStandardLength);
+        Array.Copy(unionKeyIv, 0, key,0, _keyStandardLength);
+        Array.Copy(unionKeyIv, _keyStandardLength, iv, 0, _ivStandardLength);
     }
     #endregion
 }
