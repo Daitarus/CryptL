@@ -1,0 +1,2 @@
+# CryptL
+This project is a simple set of tools for working with encryption. Currently, it has classes for working with **AES** and **RSA** *encryption*, as well as a class for *hashing* using the **SHA256** method. There are also interfaces for these classes.
