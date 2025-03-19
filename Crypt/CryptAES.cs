@@ -1,91 +1,107 @@
 ﻿using System.Security.Cryptography;
 
-namespace CryptL.Crypt
+namespace CryptL.Crypt;
+
+/// <summary>
+/// AES data encryptor.
+/// </summary>
+public sealed class CryptAES : ICrypt, IDisposable
 {
-    public sealed class CryptAES : ICrypt
+    #region Fields
+    private const int keyStandardLength = 32;
+    private const int ivStandardLength = 16;
+
+    private readonly Aes _aes = Aes.Create();
+
+    /// <summary>
+    /// Secret key for the symmetric algorithm.
+    /// </summary>
+    public byte[] Key { get => _aes.Key; }
+
+    /// <summary>
+    /// Initialization vector for the symmetric algorithm.
+    /// </summary>
+    public byte[] IV { get => _aes.IV; }
+    #endregion
+
+    #region Constructors
+    public CryptAES() { }
+
+    /// <param name="unionKeyIv">Union key based on the secret key and initialization vector.</param>
+    public CryptAES(byte[] unionKeyIv)
     {
+        if (unionKeyIv == null)
+            throw new ArgumentNullException(nameof(unionKeyIv));
 
-        private Aes aes;
+        if (unionKeyIv.Length != keyStandardLength + ivStandardLength)
+            throw new ArgumentException($"{nameof(unionKeyIv)} size not equal {keyStandardLength + ivStandardLength}");
 
-        private static int keyStandardLength = 32;
-        private static int ivStandardLength = 16;
-        public byte[] Key { get { return aes.Key; } }
-        public byte[] IV { get { return aes.IV; } }
+        PartitionKeyIV(unionKeyIv, out byte[] key, out byte[] iv);
 
-        public CryptAES() 
-        {
-            aes = Aes.Create();
-        }
-        public CryptAES(byte[] unionKeyIv)
-        {
-            byte[] key, iv;
-            PartitionKeyIV(unionKeyIv, out key, out iv);
-
-            aes = Aes.Create();
-
-            aes.Key = key;
-            aes.IV = iv;
-        }
-        public CryptAES(byte[] key, byte[] iv)
-        {
-            aes = Aes.Create();
-
-            if (key == null || key.Length != keyStandardLength)
-                throw new Exception($"AES {nameof(key)} must be {keyStandardLength} bytes");
-            if (iv == null || iv.Length != ivStandardLength)
-                throw new Exception($"AES {nameof(iv)} must be {ivStandardLength} bytes");
-
-            aes.Key = key;
-            aes.IV = iv;
-        }
-
-        public byte[] Encrypt(byte[] originalData)
-        {
-            if (originalData == null || originalData.Length == 0)
-                throw new ArgumentNullException(nameof(originalData));
-
-            byte[] encryptData = aes.EncryptCbc(originalData, aes.IV);
-            return encryptData;
-        }
-
-        public byte[] Decrypt(byte[] encryptData)
-        {
-            if (encryptData == null || encryptData.Length == 0)
-                throw new ArgumentNullException(nameof(encryptData));
-
-            byte[] decryptData =  aes.DecryptCbc(encryptData, aes.IV);
-
-            return decryptData;
-        }
-
-        public byte[] UnionKeyIV()
-        {
-            byte[] result = new byte[keyStandardLength + ivStandardLength];
-            Array.Copy(aes.Key,0,result,0,keyStandardLength);
-            Array.Copy(aes.IV,0,result,keyStandardLength,ivStandardLength);
-
-            return result;
-        }
-
-        public void PartitionKeyIV(byte[] keyIV, out byte[] key, out byte[] iv)
-        {
-            CheckExeptionUnionKey(keyIV);
-
-            key = new byte[keyStandardLength];
-            iv = new byte[ivStandardLength];
-
-            Array.Copy(keyIV, 0, key,0, keyStandardLength);
-            Array.Copy(keyIV, keyStandardLength, iv, 0, ivStandardLength);
-        }
-
-        public static void CheckExeptionUnionKey(byte[] keyIV)
-        {
-            if (keyIV == null)
-                throw new ArgumentNullException(nameof(keyIV));
-
-            if (keyIV.Length != keyStandardLength + ivStandardLength)
-                throw new ArgumentException($"{nameof(keyIV)} size not equal {keyStandardLength + ivStandardLength}");
-
-        }
+        _aes.Key = key;
+        _aes.IV = iv;
     }
+
+    /// <param name="key">Secret key for the symmetric algorithm.</param>
+    /// <param name="iv">Initialization vector for the symmetric algorithm.</param>
+    public CryptAES(byte[] key, byte[] iv)
+    {
+        if (key == null || key.Length != keyStandardLength)
+            throw new ArgumentException($"AES {nameof(key)} must be {keyStandardLength} bytes");
+
+        if (iv == null || iv.Length != ivStandardLength)
+            throw new ArgumentException($"AES {nameof(iv)} must be {ivStandardLength} bytes");
+
+        _aes.Key = key;
+        _aes.IV = iv;
+    }
+    #endregion
+
+    #region Public methods
+    /// <inheritdoc/>
+    public byte[] Encrypt(byte[] originalData)
+    {
+        if (originalData == null || originalData.Length == 0)
+            throw new ArgumentNullException(nameof(originalData));
+
+        return _aes.EncryptCbc(originalData, _aes.IV);
+    }
+
+    /// <inheritdoc/>
+    public byte[] Decrypt(byte[] encryptData)
+    {
+        if (encryptData == null || encryptData.Length == 0)
+            throw new ArgumentNullException(nameof(encryptData));
+
+        return _aes.DecryptCbc(encryptData, _aes.IV);
+    }
+
+    /// <summary>
+    /// Creates union key based on the secret key and initialization vector.
+    /// </summary>
+    /// <returns>Union key.</returns>
+    public byte[] GetUnionKeyIV()
+    {
+        byte[] result = new byte[keyStandardLength + ivStandardLength];
+        Array.Copy(_aes.Key,0,result,0,keyStandardLength);
+        Array.Copy(_aes.IV,0,result,keyStandardLength,ivStandardLength);
+
+        return result;
+    }
+
+    /// <inheritdoc/>
+    public void Dispose()
+        => _aes?.Dispose();
+    #endregion
+
+    #region Private methods
+    private static void PartitionKeyIV(byte[] unionKeyIv, out byte[] key, out byte[] iv)
+    {
+        key = new byte[keyStandardLength];
+        iv = new byte[ivStandardLength];
+
+        Array.Copy(unionKeyIv, 0, key,0, keyStandardLength);
+        Array.Copy(unionKeyIv, keyStandardLength, iv, 0, ivStandardLength);
+    }
+    #endregion
 }
