@@ -1,4 +1,4 @@
-﻿namespace CryptL
+﻿namespace CryptL.Crypt
 {
     public interface ICrypt
     {

@@ -1,6 +1,6 @@
 ﻿using System.Security.Cryptography;
 
-namespace CryptL
+namespace CryptL.Crypt
 {
     public sealed class CryptAES : ICrypt
     {

@@ -1,7 +1,7 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
 
-namespace CryptL
+namespace CryptL.Hash
 {
     public static class HashSHA256
     {
